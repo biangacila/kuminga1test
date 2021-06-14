@@ -1,6 +1,6 @@
 import React from "react";
 import ReactCssTransitionGroup from "react-addons-css-transition-group";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+//import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import "./style.css";
 
 class UsersForm extends React.Component {
@@ -15,7 +15,8 @@ class UsersForm extends React.Component {
                 {title: "three", imageUrl: ""},
                 {title: "four", imageUrl: ""},
                 {title: "five", imageUrl: ""},
-            ]
+            ],
+            isHovered:false,
         }
     }
 
@@ -75,7 +76,13 @@ class UsersForm extends React.Component {
             let el = this.state.data[i];
             tmp.push(el);
         }
-        this.setState({data: tmp})
+        this.setState({data: tmp,isHovered:true})
+        let _this=this;
+        setTimeout(()=>{
+            _this.setState({
+                isHovered:false,
+            })
+        },500)
     }
     backSlide = () => {
         let totalElement = this.state.data.length
@@ -87,7 +94,50 @@ class UsersForm extends React.Component {
             tmp.push(el);
         }
         tmp.push(firstElement);
-        this.setState({data: tmp})
+        this.setState({data: tmp,isHovered:true})
+        let _this=this;
+        setTimeout(()=>{
+            _this.setState({
+                isHovered:false,
+            })
+        },300)
+    }
+
+    renderBox = () => {
+
+        let extraStyle = this.getStyle();
+        let holdingBox = [];
+        let total = 4;
+        for (let i = 0; i <= total; i++) {
+            if (i !== 2) {
+                holdingBox.push(
+                    <div style={{...styles.normalSlide,...extraStyle}}>
+                        <h1>{this.state.data[i].title}</h1>
+                    </div>
+                )
+            } else {
+                holdingBox.push(
+                    <div style={{...styles.mainSlide,...extraStyle}}>
+                        <h1>{this.state.data[i].title}</h1>
+                    </div>
+                )
+            }
+        }
+
+        return holdingBox.map(box => {
+            return box
+        })
+
+    }
+
+    getStyle = () => {
+        let {isHovered}=this.state;
+        return {
+            opacity: isHovered ? 0 : 0.8,
+            height: isHovered ? 200 : 300,
+            width: isHovered ? 200 : 300,
+            transition: 'all 1s',
+        }
     }
 
     render() {
@@ -106,15 +156,17 @@ class UsersForm extends React.Component {
                 </form>
                 <hr/>
 
-                    <ReactCssTransitionGroup
-                        transitionName={"fade"}
-                        transitionEnterTimeout={600}
-                        transitionLeaveTimeout={600}
-                        transitionAppear={true}
-                        transitionAppearTimeout={500}
-                        style={styles.boxSlide}
-                    >
-                        <div style={styles.normalSlide}>
+                <ReactCssTransitionGroup
+                    transitionName={"fade"}
+                    transitionEnterTimeout={600}
+                    transitionLeaveTimeout={600}
+                    transitionAppear={true}
+                    transitionAppearTimeout={500}
+                    style={styles.boxSlide}
+                >
+
+                    {this.renderBox()}
+                    {/*<div style={styles.normalSlide}>
                             <h1>{this.state.data[0].title}</h1>
                         </div>
                         <div style={styles.normalSlide}>
@@ -130,8 +182,8 @@ class UsersForm extends React.Component {
                         </div>
                         <div style={styles.normalSlide}>
                             <h1>{this.state.data[4].title}</h1>
-                        </div>
-                    </ReactCssTransitionGroup>
+                        </div>*/}
+                </ReactCssTransitionGroup>
 
 
                 <div style={styles.navSlide}>
