@@ -5,6 +5,7 @@ import UsersForm from "./pages/UsersForm";
 import RegisterPage from "./pages/RegisterPage"
 import LoginPage from "./pages/LoginPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import MySlider from "./pages/MySlider";
 const createHistory = require("history").createHashHistory;
 const history = createHistory();
 
@@ -12,6 +13,7 @@ function App() {
     return (
         <Router history={history}>
         <Switch>
+            <Route exact path="/slider" component={MySlider}/>
             <Route exact path="/user" component={UsersForm}/>
             <Route exact path="/register" component={RegisterPage}/>
             <Route exact path="/login" component={LoginPage}/>
