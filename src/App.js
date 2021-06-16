@@ -17,7 +17,7 @@ function App() {
             <Route exact path="/user" component={UsersForm}/>
             <Route exact path="/register" component={RegisterPage}/>
             <Route exact path="/login" component={LoginPage}/>
-            <Route exact path="/" component={UsersForm}/>
+            <Route exact path="/" component={MySlider}/>
             <Route exact path="*" component={NotFoundPage}/>
         </Switch>
         </Router>
