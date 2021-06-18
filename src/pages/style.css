@@ -1,15 +1,52 @@
+* {
+    box-sizing: border-box;
+}
 
-.fade-enter{
-    opacity: 0;
+html, body {
+    height: 100%;
+    min-height: 100%;
+    font-family: Roboto, sans-serif;
+    background: #e2e0e0;
 }
-.fade-enter-active{
-    opacity: 1;
-    transition: opacity 600ms ease-in;
+
+main {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
 }
-.fade-leave{
-    opacity: 1;
+
+.cell {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    font-size: 26px;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.87);
+    color: rgba(0, 0, 0, 0.92);
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eee;
+    height: 100%;
+    transform-origin: center bottom;
 }
-.fade-leave-active{
-    opacity: 0.01;
-    transition: opacity 600ms ease-in;
+
+.picker {
+    position: relative;
+    overflow: hidden;
+    width: 80vw;
+    height: 90vh;
+    border-radius: 2px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
 }

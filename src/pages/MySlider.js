@@ -2,7 +2,7 @@
 import React from "react";
 import gsap from "gsap";
 import {  TweenLite,TimelineMax,} from "gsap";
-import Draggable from "draggable";
+
 
 export default class MySlider extends React.Component {
     constructor(props) {
@@ -14,7 +14,7 @@ export default class MySlider extends React.Component {
        // gsap.to('#picker', {x: 250, duration: 5})
         //this.maker();
         //this.maker2()
-        this.maker3()
+        this.maker4()
     }
 
     backSlide=()=>{
@@ -24,8 +24,66 @@ export default class MySlider extends React.Component {
         gsap.to('#picker', {x: 150, duration: 5})
         //gsap.from('#picker',{x: 150, duration: 5})
     }
+    maker4=()=>{
+        let picker = document.querySelector("#picker");
+        let cells = document.querySelectorAll(".cell");
+        let proxy = document.createElement("div");
+        let cellWidth = 50;
+
+        var divWidth = document.getElementsByClassName("cell")[0].clientWidth;
+
+        let baseTl = new TimelineMax({paused: true});
+        let animation = new TimelineMax({repeat: -1, paused: true})
+            .add(baseTl.tweenFromTo(1, 2))
+        console.log(">F: ",1," > ",)
+        function snapX(x) {
+            return Math.round(x / cellWidth) * cellWidth;
+        }
+        console.log(">F: ",2)
+        function updateProgress() {
+            animation.progress(this.x / wrapWidth);
+        }
+
+        console.log(">F: ",3)
+
+        for (let i = 0; i < cells.length; i++) {
+            initCell(cells[i], i);
+        }
+        function initCell(element, index) {
+
+            TweenLite.set(element, {
+                width: cellWidth,
+                scale: 0.6,
+                //rotationX: rotationX,
+                x: -cellWidth
+            });
+
+            var tl = new TimelineMax({repeat: 1})
+                .to(element, 1, {x: "+=" + wrapWidth/*, rotationX: -rotationX*/}, 0)
+                .to(element, cellStep, {color: "#009688", scale: 1, repeat: 1, yoyo: true}, 0.5 - cellStep)
+
+            baseTl.add(tl, index * -cellStep);
+        }
+
+
+        let draggable = window.Draggable.create(proxy, {
+            // allowContextMenu: true,
+            type: "x",
+            trigger: picker,
+            throwProps: true,
+            onDrag: updateProgress,
+            onThrowUpdate: updateProgress,
+            snap: {
+                x: snapX
+            },
+            onThrowComplete: function () {
+                console.log("onThrowComplete");
+                //TODO: animation that inject selected card title
+            }
+        });
+    }
     maker3=()=>{
-        let cellWidth = 150;
+        let cellWidth = 450;
         let picker = document.querySelector("#picker");
         let cells = document.querySelectorAll(".cell");
         let proxy = document.createElement("div");
@@ -34,9 +92,9 @@ export default class MySlider extends React.Component {
         let cellStep = 1 / numCells;
         let wrapWidth = cellWidth * numCells;
 
-        let baseTl = new TimelineMax({paused: true},5);
+        let baseTl = new TimelineMax({paused: true},0);
         TweenLite.set(picker, {
-            //perspective: 1100,
+            /*perspective: 1100,*/
             width: wrapWidth - cellWidth
         });
 
@@ -90,18 +148,12 @@ export default class MySlider extends React.Component {
 
 
     render() {
-        return (
-            <div style={{
-                minWidth: "90%",
-                maxWidth: "90%",
-                minHeight: "91%",
-                maxHeight: "91%",
-                /*background:"blue",*/
-                margin: 30,
-                borderStyle: "1px solid black"
-            }}>
 
-                    <div id="picker" className="picker" style={styles.main}>
+
+        return (
+            <main>
+
+                    <div id="picker"  style={styles.main}>
                         <div className="cell" style={styles.cell}>
                             <div className="cell-content" style={styles.cellContent}>Card 1</div>
                         </div>
@@ -136,10 +188,18 @@ export default class MySlider extends React.Component {
                         <button style={styles.btn} onClick={this.nextSlide}>Right</button>
                     </div>
                 </div>
-            </div>
+            </main>
         )
     }
 }
+
+let cellWidth = 450;
+let cells = document.querySelectorAll(".cell");
+let proxy = document.createElement("div");
+
+let numCells = cells.length;
+let cellStep = 1 / numCells;
+let wrapWidth = cellWidth * numCells;
 
 const styles = {
     btn: {
@@ -172,10 +232,10 @@ const styles = {
         top: 0,
         left: 0,
         margin:10,
-        maxWidth: 150,
-        minWidth:150,
-        maxHeight:200,
-        minHeight:200,
+        /*maxWidth: 450,*/
+        minWidth:450,
+        /*maxHeight:450,*/
+        minHeight:650,
         fontSize: 26,
         fontWeight: "500",
         color: "rgba(0, 0, 0, 0.92)",
@@ -184,7 +244,7 @@ const styles = {
         alignItems: "center",
         justifyContent: "center",
         backgroundColor:"#eee",
-        transform:"center bottom",
+        transformOrigin:"center bottom",
         border:"1px solid black",
         borderRadius: 5
     },
@@ -201,9 +261,9 @@ const styles = {
         display: "flex",
         flexDirection: "row",
         /*backgroundColor: "green",*/
-        position: "relative",
+        position: "absolute",
         overflow: "hidden",
-        width: "100%",
+        width: 400,
         borderRadius: "2px",
         boxShadow: "0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14),\n" +
             "    0 1px 10px 0 rgba(0, 0, 0, 0.12)",
