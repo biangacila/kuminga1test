@@ -1,6 +1,82 @@
 import React from "react";
 import "./style.css";
-import gsap from "gsap";
+
+let gsap = window.gsap;
+let Draggable = window.Draggable;
+let InertiaPlugin = window.InertiaPlugin;
+
+gsap.registerPlugin(Draggable, InertiaPlugin);
+
+gsap.defaults({ease: "none"});
+
+var picker = document.querySelector(".picker");
+var cells = gsap.utils.toArray(".cell");
+var proxy = document.createElement("div");
+
+var cellWidth = 450;
+//var rotationX = 90;
+
+var numCells = cells.length;
+var cellStep = 1 / numCells;
+var wrapWidth = cellWidth * numCells;
+
+var baseTl = gsap.timeline({paused: true});
+var wrapProgress = gsap.utils.wrap(0, 1);
+
+gsap.set(picker, {
+    //perspective: 1100,
+    width: wrapWidth - cellWidth
+});
+
+for (var i = 0; i < cells.length; i++) {
+    initCell(cells[i], i);
+}
+
+var animation = gsap.timeline({repeat: -1, paused: true})
+    .add(baseTl.tweenFromTo(1, 2, {immediateRender: true}))
+
+var draggable = new Draggable(proxy, {
+    // allowContextM enu: true,
+    type: "x",
+    trigger: picker,
+    inertia: true,
+    onDrag: updateProgress,
+    onThrowUpdate: updateProgress,
+    snap: {
+        x: snapX
+    },
+    onThrowComplete: function () {
+        let biggestElement = cells.slice(0).sort((a, b) => gsap.getProperty(a, "scaleX") - gsap.getProperty(b, "scaleX")).pop();
+        console.log("onThrowComplete. Biggest element:", biggestElement);
+    }
+});
+
+function snapX(x) {
+    console.log("snapX > ", Math.round(x / cellWidth) * cellWidth)
+    return Math.round(x / cellWidth) * cellWidth;
+}
+
+function updateProgress() {
+    console.log("updateProgress X > ", this.x);
+    animation.progress(wrapProgress(this.x / wrapWidth));
+}
+
+function initCell(element, index) {
+    console.log("initCell>>> ", element, " > ", index)
+    gsap.set(element, {
+        width: cellWidth,
+        scale: 0.6,
+        //rotationX: rotationX,
+        x: -cellWidth
+    });
+
+    var tl = gsap.timeline({repeat: 1})
+        .to(element, 1, {x: "+=" + wrapWidth/*, rotationX: -rotationX*/}, 0)
+        .to(element, cellStep, {color: "#009688", scale: 1, repeat: 1, yoyo: true}, 0.5 - cellStep);
+    console.log("UUUUUUUU>>> ", i, " > ", i * -cellStep)
+    baseTl.add(tl, i * -cellStep);
+}
+
 
 export default class GoodProgress extends React.Component {
     constructor(props) {
@@ -17,13 +93,12 @@ export default class GoodProgress extends React.Component {
                 {title: "Card 6"},
                 {title: "Card 7"},
                 {title: "Card 8"},
-            ],
-            wrapWidth:0,
+            ]
         }
     }
 
     componentDidMount() {
-        this.initJavascript();
+        //this.initJavascript();
     }
 
     initJavascript = () => {
@@ -81,9 +156,7 @@ export default class GoodProgress extends React.Component {
             draggable: draggable,
             gsap: gsap,
             baseTl: baseTl,
-            cellStep: cellStep,
-            cells:cells,
-            wrapWidth:wrapWidth,
+            cellStep: cellStep
         })
 
         function snapX(x) {
@@ -108,6 +181,7 @@ export default class GoodProgress extends React.Component {
             var tl = gsap.timeline({repeat: 1})
                 .to(element, 1, {x: "+=" + wrapWidth/*, rotationX: -rotationX*/}, 0)
                 .to(element, cellStep, {color: "#009688", scale: 1, repeat: 1, yoyo: true}, 0.5 - cellStep);
+            console.log("UUUUUUUU>>> ", i, " > ", i * -cellStep)
             baseTl.add(tl, i * -cellStep);
         }
 
@@ -115,34 +189,33 @@ export default class GoodProgress extends React.Component {
     }
 
     backSlide = () => {
-        let i = this.state.index;
-        let nextPosition = i -0.1;
-        let element = this.state.baseTl.tweenFromTo(i,  nextPosition,{immediateRender: true, duration: 2})
-        let tl =  this.state.gsap.timeline({repeat: 100})
-            .to(element, 1, {x: "+=" + this.state.wrapWidth}, 0)
-            .to(element, this.state.cellStep, { repeat: 100, yoyo: false}, i  );
-        i = i -0.1;
-        let baseTl = this.state.baseTl.add(tl,i  );
-        this.setState({
-            index:i,
-            baseTl:baseTl
-        })
+        gsap.from('#picker', {x: 150, duration: 5})
     }
 
     nextSlide = () => {
+        let fromPosition = this.state.index;
+        let toPosition = (fromPosition-1) + 0.9;
+
+         gsap.to(baseTl.tweenFromTo(fromPosition, toPosition, {immediateRender: true, duration: 2,}))
+
         let i = this.state.index;
-        let nextPosition = i +0.1;
-        let el = this.state.cells[i];
-        let element = this.state.baseTl.tweenFromTo(i,  nextPosition,{immediateRender: true, duration: 2})
-       let tl =  this.state.gsap.timeline({repeat: 100})
-           .to(element, 1, {x: "+=" + this.state.wrapWidth}, 0)
-           .to(element, this.state.cellStep, { repeat: 100, yoyo: false}, i  );
-        i = i +0.1;
-        let baseTl = this.state.baseTl.add(tl,i  );
+        i = i +1;
         this.setState({
             index:i,
-            baseTl:baseTl
+            gsap:gsap
         })
+
+        /*let totalElement = this.state.data.length
+        let index = totalElement - 1;
+        let lastElement = this.state.data[index];
+        let tmp = [];
+        tmp.push(lastElement);
+        for (let i = 0; i < totalElement - 1; i++) {
+            let el = this.state.data[i];
+            tmp.push(el);
+        }
+        this.setState({data: tmp,isHovered:true})*/
+
     }
 
     getContent=(index)=>{
@@ -271,4 +344,5 @@ const styles = {
         padding: 20,
     }
 }
+
 

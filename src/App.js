@@ -7,6 +7,7 @@ import LoginPage from "./pages/LoginPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import MySlider from "./pages/MySlider";
 import GoodProgress from "./pages/GoodProgress";
+import GoodProgressFake from "./pages/GoodProgressFake";
 const createHistory = require("history").createHashHistory;
 const history = createHistory();
 
